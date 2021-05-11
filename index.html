@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreeDomg</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+
+    
+    <script>
+        var scene = new THREE.Scene()
+        /*var camera = new Three.PerspectiveCamera(
+            75, //Field of View
+            window.innerWidth/window.innerHeight, // Aspect Ratio
+            0.1, //near plane
+            1000 // far plane
+        )*/
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
+        camera.position.z=3;
+        //camera.rotation=(45, 10, 10);
+        //camera.rotation.y=-0.25;
+        //camera.rotation.x=1;
+
+        var renderer = new THREE.WebGLRenderer({antialias: true})
+        renderer.setClearColor("#fb5607") //Hintergrund Orange
+        renderer.setSize(window.innerWidth, window.innerHeight)
+
+        //An Body anhängen
+        document.body.appendChild(renderer.domElement)
+
+        window.addEventListener('resize', ()=> {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+
+            camera.updateProjectionMatrix();
+        })
+
+
+        this.addEventListener('keydown', (event)=>{
+            //console.log(event.key + " " + event.code)
+            if(event.key === "ArrowUp"){
+                mesh.position.y += 1;
+            }
+            if(event.key === "ArrowDown"){
+                mesh.position.y -= 1;
+            }
+            if(event.key === "ArrowRight"){
+                mesh.position.x += 1;
+            }
+            if(event.key === "ArrowLeft"){
+                mesh.position.x -= 1;
+            }
+            
+        })
+
+        function onMouseMove(event){
+            event.preventDefault();
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            
+            var intersects = raycaster.intersectObjects(scene.children, true);
+            for(var i = 0; i < intersects.length; i++){
+                intersects[i].object.material.color.set(0x3a86ff)
+            }
+        }
+
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2();
+
+        //var geometry = new THREE.SphereGeometry(1, 10, 10);
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshLambertMaterial({color: 0xFF006E});
+        var mesh = new THREE.Mesh(geometry, material);
+        //mesh.position.x =2;
+        //mesh.position.y=3;
+        //mesh.position.y=4;
+        mesh.position.set(0,0,0)
+        //mesh.rotation.set(45,0,0);
+        //mesh.scale.set(1,2,1);
+
+
+        scene.add(mesh);
+
+        var light = new THREE.PointLight(0xFFFFFF, 1, 500)
+        light.position.set(10,0,25)
+        scene.add(light)
+
+        renderer.render(scene, camera);
+
+        var render = function(){
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+
+        render();
+
+        //this.tl = new TimelineMax().delay(.3);
+        this.tl = new TimelineMax({paused: true});
+        this.tl.to(this.mesh.scale,1,{x:2, ease: Expo.easeOut});
+
+        window.addEventListener('mousemove', onMouseMove);
+
+    
+
+    </script>
+</body>
+</html>
